@@ -25,7 +25,10 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { toast } from '@/hooks/use-toast';
+import { authClient } from '@/lib/auth-client';
 import { signUpSchema } from '@/schemas/AuthSchema';
+import { redirect } from 'next/navigation';
 
 export default function SignUp() {
   const form = useForm<z.infer<typeof signUpSchema>>({
@@ -37,8 +40,35 @@ export default function SignUp() {
     },
   });
 
-  function onSubmit(data: z.infer<typeof signUpSchema>) {
-    console.log(data);
+  async function onSubmit(values: z.infer<typeof signUpSchema>) {
+    const { name, email, password } = values;
+
+    const { data, error } = await authClient.signUp.email(
+      {
+        email,
+        password,
+        name,
+        callbackURL: 'http://localhost:3000/sign-in',
+      },
+      {
+        onRequest: () => {
+          toast({
+            title: 'Criando conta...',
+          });
+        },
+        onSuccess: () => {
+          form.reset();
+          redirect('/sign-in');
+        },
+        onError: (context) => {
+          toast({
+            title: 'Erro ao criar conta',
+            description: context.error.message,
+            variant: 'destructive',
+          });
+        },
+      }
+    );
   }
 
   return (
@@ -89,7 +119,9 @@ export default function SignUp() {
                 </FormItem>
               )}
             />
-            <Button className='w-full' type="submit">Entrar</Button>
+            <Button className="w-full" type="submit">
+              Entrar
+            </Button>
           </form>
         </Form>
       </CardContent>
