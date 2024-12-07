@@ -9,7 +9,6 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 
-import { signInSchema } from '@/schemas/SignIn';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -26,6 +25,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { signInSchema } from '@/schemas/AuthSchema';
 
 export default function SignIn() {
   const form = useForm<z.infer<typeof signInSchema>>({
@@ -75,7 +75,7 @@ export default function SignIn() {
                 </FormItem>
               )}
             />
-            <Button type="submit">Entrar</Button>
+            <Button className='w-full' type="submit">Entrar</Button>
           </form>
         </Form>
       </CardContent>
